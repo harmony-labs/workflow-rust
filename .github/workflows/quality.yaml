@@ -1,0 +1,55 @@
+name: Rust Quality Pipeline
+
+on:
+  workflow_call:
+    inputs:
+      cargo_test_args:
+        description: 'Optional additional arguments for cargo test'
+        required: false
+        type: string
+        default: '--verbose'
+      lint:
+        description: 'Run linting (clippy & formatting check)'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Cache Cargo Registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache Cargo Git Index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build Project
+        run: cargo build --verbose
+
+      - name: Run Tests
+        run: cargo test ${{ inputs.cargo_test_args }}
+
+      - name: Install Clippy and Rustfmt
+        if: inputs.lint
+        run: |
+          rustup component add clippy
+          rustup component add rustfmt
+
+      - name: Lint with Clippy
+        if: inputs.lint
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Check Code Formatting with rustfmt
+        if: inputs.lint
+        run: cargo fmt -- --check
