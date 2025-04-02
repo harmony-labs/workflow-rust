@@ -29,7 +29,7 @@ on:
 
 jobs:
   quality:
-    uses: harmony-labs/workflow-release/.github/workflows/quality.yaml@main
+    uses: harmony-labs/workflow-rust/.github/workflows/quality.yaml@main
     with:
       cargo_test_args: '--verbose'
       lint: true
@@ -50,7 +50,7 @@ on:
 
 jobs:
   quality:
-    uses: harmony-labs/workflow-release/.github/workflows/quality.yaml@main
+    uses: harmony-labs/workflow-rust/.github/workflows/quality.yaml@main
     with:
       cargo_test_args: '--verbose'
       lint: true
@@ -79,7 +79,7 @@ on:
 
 jobs:
   publish:
-    uses: harmony-labs/workflow-release/.github/workflows/release.yaml@main
+    uses: harmony-labs/workflow-rust/.github/workflows/release.yaml@main
     with:
       executable_name: my-app
       platforms: '[{"os-name": "Linux-x86_64", "runs-on": "ubuntu-24.04", "target": "x86_64-unknown-linux-musl"}]'
