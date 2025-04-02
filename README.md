@@ -39,7 +39,7 @@ jobs:
 
 ### Quality, Versioning & Tagging
 
-Use with [workflow-release](https://github.com/harmony-labs/workflow-release) to automatically generate versions and create Git tags based on commit logs, ensuring that only meaningful changes trigger a version bump.
+Use with other harmony-labs workflows to automatically generate versions and create Git tags based on commit logs, ensuring that only meaningful changes trigger a version bump.
 
 **Example:**
 ```yaml
@@ -50,14 +50,14 @@ on:
 
 jobs:
   quality:
-    uses: harmony-labs/workflow-rust/.github/workflows/quality.yaml@main
+    uses: harmony-labs/workflow-rust-quality/.github/workflows/workflow.yaml@main
     with:
       cargo_test_args: '--verbose'
       lint: true
 
   version-and-tag:
     needs: quality
-    uses: harmony-labs/workflow-release/.github/workflows/version-and-tag.yaml@main
+    uses: harmony-labs/workflow-vnext-tag/.github/workflows/workflow.yaml@main
     secrets: inherit
     with:
       useDeployKey: true
@@ -67,6 +67,8 @@ jobs:
 And then add the following release job.
 
 ### Releasing Rust Binaries
+
+The Version and tag job creates a tag - make sure to set up a deploy key for your repo and a secret to use it (will automate later).
 
 The `release.yaml` workflow is designed for building and releasing Rust binaries across multiple platforms using a matrix strategy. It helps you publish artifacts as GitHub Releases with ease. It picks up where version-and-tag leaves off.
 
@@ -79,7 +81,7 @@ on:
 
 jobs:
   publish:
-    uses: harmony-labs/workflow-rust/.github/workflows/release.yaml@main
+    uses: harmony-labs/workflow-rust-release/.github/workflows/workflow.yaml@main
     with:
       executable_name: my-app
       platforms: '[{"os-name": "Linux-x86_64", "runs-on": "ubuntu-24.04", "target": "x86_64-unknown-linux-musl"}]'
