@@ -29,7 +29,7 @@ on:
 
 jobs:
   quality:
-    uses: harmony-labs/workflow-rust/.github/workflows/quality.yaml@main
+    uses: harmony-labs/workflow-rust-quality/.github/workflows/quality.yaml@main
     with:
       cargo_test_args: '--verbose'
       lint: true
