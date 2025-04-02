@@ -1,6 +1,6 @@
 # Workflow for Rust Projects
 
-This repository offers a set of GitHub workflows focused on quality assurance and continuous integration for Rust projects. It’s designed to work seamlessly alongside the separate [harmony-labs/workflow-release](https://github.com/harmony-labs/workflow-release) project, which handles versioning, and tagging in a language agnostic way. Together, they provide a modular approach to managing your code quality and release processes.
+This repository offers a set of GitHub workflows focused on quality assurance and continuous integration for Rust projects. It’s designed to work seamlessly alongside our other workflows, which handle versioning, and tagging in a language agnostic way. Together, they provide a simple and modular approach to managing your code quality and release processes.
 
 ---
 
