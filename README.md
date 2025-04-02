@@ -1,103 +1,115 @@
-# workflow-release
+# Workflow for Rust Projects
 
-Expects a Personal Access Token to be set as an actions secret named `GH_PAT_TOKEN` which has permissions for:
-* repo
-* write:packages
+This repository offers a set of GitHub workflows focused on quality assurance and continuous integration for Rust projects. It’s designed to work seamlessly alongside the separate [harmony-labs/workflow-release](https://github.com/harmony-labs/workflow-release) project, which handles versioning, and tagging in a language agnostic way. Together, they provide a modular approach to managing your code quality and release processes.
 
-You can generate this token here: https://github.com/settings/tokens/new?scopes=repo,write:packages
+---
 
-## Examples
+## Overview
 
-### Rust
+- **Quality Assurance:**  
+  Automated builds, tests, linting, and formatting checks ensure your code remains robust and maintainable. Efficient caching strategies further reduce build times.
 
-*.github/workflows/version-and-tag.yaml*
+- **Release Management:**  
+  While this repository manages CI and quality checks, you can integrate it with the separate [harmony-labs/workflow-release](https://github.com/harmony-labs/workflow-release) project to automate version bumps, tag creation, and GitHub Releases. In particular, the `release.yaml` workflow is a powerful tool for building and releasing Rust binaries across multiple platforms.
+
+---
+
+## Key Workflows & Their Triggers
+
+### Quality Pipeline
+
+Run your code quality checks automatically on code updates.
+
+**Example:**
 ```yaml
-name: version-and-tag
 on:
   push:
     branches:
-    - main
+      - main
 
 jobs:
-
-  release:
-    uses: harmony-labs/workflow-release/.github/workflows/version-and-tag.yaml@main
-    secrets: inherit
+  quality:
+    uses: harmony-labs/workflow-release/.github/workflows/quality.yaml@main
     with:
-      rust: true
+      cargo_test_args: '--verbose'
+      lint: true
 ```
 
-### Node
+---
 
-*.github/workflows/version-and-tag.yaml*
+### Versioning & Tagging
+
+Use with [workflow-release](https://github.com/harmony-labs/workflow-release) to automatically generate versions and create Git tags based on commit logs, ensuring that only meaningful changes trigger a version bump.
+
+**Example:**
 ```yaml
-name: version-and-tag
 on:
   push:
     branches:
-    - main
+      - main
 
 jobs:
+  quality:
+    uses: harmony-labs/workflow-release/.github/workflows/quality.yaml@main
+    with:
+      cargo_test_args: '--verbose'
+      lint: true
 
-  release:
+  version-and-tag:
+    needs: quality
     uses: harmony-labs/workflow-release/.github/workflows/version-and-tag.yaml@main
     secrets: inherit
     with:
-      node: true
+      useDeployKey: true
 ```
 
-### YAML
+And then add the following release job.
 
-Any yaml can be patched - such as a values file for a helm chart.
+### Releasing Rust Binaries
 
-*.github/workflows/version-and-tag.yaml*
+The `release.yaml` workflow is designed for building and releasing Rust binaries across multiple platforms using a matrix strategy. It helps you publish artifacts as GitHub Releases with ease. It picks up where version-and-tag leaves off.
+
+**Example Trigger:**
 ```yaml
-name: version-and-tag
 on:
   push:
-    branches:
-    - main
+    tags:
+      - "v*.*.*"
 
 jobs:
-
-  release:
-    uses: harmony-labs/workflow-release/.github/workflows/version-and-tag.yaml@main
-    secrets: inherit
+  publish:
+    uses: harmony-labs/workflow-release/.github/workflows/release.yaml@main
     with:
-      yqPatches: |
-        patches:
-          - filePath: helm/values.yaml
-            selector: .image.tag
-            valuePrefix: "v"
-          - filePath: other/example.yaml
-            selector: .image.tag
-            valuePrefix: ""
+      executable_name: my-app
+      platforms: '[{"os-name": "Linux-x86_64", "runs-on": "ubuntu-24.04", "target": "x86_64-unknown-linux-musl"}]'
 ```
 
-### Regex
+---
 
-We can also patch any file with regex:
+## Getting Started
 
-*.github/workflows/version-and-tag.yaml*
-```yaml
-name: version-and-tag
-on:
-  push:
-    branches:
-    - main
+1. **Integrate the Workflows:**  
+   Copy the example snippets into your project’s `.github/workflows` directory. Adjust the inputs to match your project's specific needs.
 
-jobs:
+2. **Enhance Your Release Process:**  
+   For a full release management experience—including automated versioning, tagging, and artifact publishing—integrate the separate [harmony-labs/workflow-release](https://github.com/harmony-labs/workflow-release) project with these workflows.
 
-  release:
-    uses: harmony-labs/workflow-release/.github/workflows/version-and-tag.yaml@main
-    secrets: inherit
-    with:
-      regexPatches: |
-        patches:
-          - filePath: package/composition.yaml
-            regex: /ghcr.io/org-name/package-name:(.*)/g
-            valuePrefix: ghcr.io/org-name/package-name:v
-          - filePath: package/example.yaml
-            regex: /ghcr.io/org-name/package-name:(.*)/g
-            valuePrefix: ""
-```
+---
+
+## Best Practices
+
+- **Run Early Quality Checks:**  
+  Execute the quality pipeline on every push to ensure issues are caught before merging.
+
+- **Automate Versioning:**  
+  Leverage commit messages to drive your versioning strategy, minimizing manual intervention and errors.
+
+- **Support Multiple Platforms:**  
+  Use the `release.yaml` workflow’s matrix strategy to build and release your Rust binaries on all major platforms.
+
+- **Keep Workflows Modular:**  
+  Separate continuous integration from release management. This modularity simplifies maintenance and allows each process to excel in its role.
+
+---
+
+Enhance your Rust development workflow with these GitHub actions and the complementary [harmony-labs/workflow-release](https://github.com/harmony-labs/workflow-release) project. Enjoy robust quality assurance and seamless cross-platform releases every time you push new code!
