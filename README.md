@@ -37,7 +37,7 @@ jobs:
 
 ---
 
-### Versioning & Tagging
+### Quality, Versioning & Tagging
 
 Use with [workflow-release](https://github.com/harmony-labs/workflow-release) to automatically generate versions and create Git tags based on commit logs, ensuring that only meaningful changes trigger a version bump.
 
@@ -61,6 +61,7 @@ jobs:
     secrets: inherit
     with:
       useDeployKey: true
+      rust: true
 ```
 
 And then add the following release job.
