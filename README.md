@@ -1,4 +1,4 @@
-# Workflow for Rust Projects
+# workflow-rust-quality
 
 This repository offers a set of GitHub workflows focused on quality assurance and continuous integration for Rust projects. It’s designed to work seamlessly alongside our other workflows, which handle versioning, and tagging in a language agnostic way. Together, they provide a simple and modular approach to managing your code quality and release processes.
 
